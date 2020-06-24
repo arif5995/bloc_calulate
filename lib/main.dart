@@ -1,4 +1,6 @@
 import 'package:bloccalulate/bloc.dart';
+import 'package:bloccalulate/ui/kalkulator_page.dart';
+import 'package:bloccalulate/ui/plesminus_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -10,61 +12,40 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: HomeScreen(),
+      home: Home(),
     );
   }
 }
 
-class HomeScreen extends StatefulWidget {
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  Bloc _bloc = Bloc(0);
+class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("BLOC CALCULATE"),
-      ),
-      body: SafeArea(
-          child: Center(
-            child: StreamBuilder<int>(
-              stream: _bloc.counterObservable,
-              builder: (context, snapshot) {
-                return Text(
-                  "${snapshot.data}",
-                  style: Theme.of(context).textTheme.display2,
-                );
-              },
-            ),
-      )),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          FloatingActionButton(
-            child: Icon(Icons.add),
-            onPressed: (){
-              _bloc.increment();
-            },
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 40.0),
+          child: Column(
+            children: <Widget>[
+              RaisedButton(
+                child: Text("++--"),
+                  onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+                  }),
+              SizedBox(
+                height: 30,
+              ),
+              RaisedButton(
+                  child: Text("Kalkulator"),
+                  onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => KalkulatorPage()));
+                  }),
+            ],
           ),
-          SizedBox(
-            height: 16.0,
-          ),
-          FloatingActionButton(
-            child: Icon(Icons.remove),
-            onPressed: (){
-              _bloc.decrement();
-            },
-          ),
-        ],
+        ),
       ),
     );
   }
-  @override
-  void dispose() {
-    _bloc.dispose();
-    super.dispose();
-  }
 }
+
+
+
