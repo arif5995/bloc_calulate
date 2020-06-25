@@ -8,14 +8,19 @@ class KalkulatorPage extends StatefulWidget {
 
 class _KalkulatorPageState extends State<KalkulatorPage> {
   KalkulatorBloc kalkulatorBloc = KalkulatorBloc();
+  bool _validate = false;
   final TextEditingController _controllerNumberA = TextEditingController();
   final TextEditingController _controllerNumberB = TextEditingController();
 
   void calculate(Operation operation){
     int numberA =  int.parse(_controllerNumberA.text.toString());
-    int numberB =  int.parse(_controllerNumberA.text.toString());
+    int numberB =  int.parse(_controllerNumberB.text.toString());
+    print("Data a: ${numberA.toString()}");
+    print("Data b: ${numberB.toString()}");
     kalkulatorBloc.eventSink.add(KalkulatorEvent(operation, numberA, numberB));
+    //KalkulatorEvent(operation, numberA, numberB);
   }
+
 
   @override
   void dispose() {
@@ -38,6 +43,7 @@ class _KalkulatorPageState extends State<KalkulatorPage> {
                   controller: _controllerNumberA,
                   decoration: InputDecoration(
                     labelText: 'Number A',
+                    errorText: _validate ? "Number A Kosoong" : null
                   ),
                   keyboardType: TextInputType.number,
                 ),
@@ -45,6 +51,7 @@ class _KalkulatorPageState extends State<KalkulatorPage> {
                   controller: _controllerNumberB,
                   decoration: InputDecoration(
                     labelText: 'Number B',
+                      errorText: _validate ? "Number B Kosoong" : null
                   ),
                   keyboardType: TextInputType.number,
                 ),
@@ -84,17 +91,35 @@ class _KalkulatorPageState extends State<KalkulatorPage> {
                   ],
                 ),
                 SizedBox(width: 8.0),
-                StreamBuilder(
+                StreamBuilder<KalkulatorState>(
                     stream: kalkulatorBloc.stateStream,
-                    builder: (context, state){
-                      if(state is KalkulatorSukses){
-                        return Text("Hasil : ${state.data}");
-                      }else if (state is KalkulatoorFailed){
-                        return Text("Error : ${state.error}");
-                      } else {
-                        return Text("");
+                    builder: (context, snapshot){
+                      if(snapshot.hasData){
+                        if (snapshot.data is KalkulatorSukses) {
+                          final data = snapshot.data as KalkulatorSukses;
+                          return Column(
+                            children: <Widget>[
+                              Text("Hasil : ${data.result}"),
+                              Text("Input A: ${_controllerNumberA.text}"),
+                              Text("Input B: ${_controllerNumberB.text}")
+                            ],
+                          );
+                        }else {
+                          return Container();
+                        }
+                      }else {
+                        return Container();
                       }
-                    })
+                    },)
+//               StreamBuilder(
+//                   stream: kalkulatorBloc.stateStream,
+//                   builder: (context, snapshot ){
+//                     if(snapshot.hasData){
+//                       return Text("Hasil : ${snapshot.data.result}");
+//                     } else {
+//                       return Text("");
+//                     }
+//                   })
               ],
             ),
           )),
