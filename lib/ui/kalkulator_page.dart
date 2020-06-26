@@ -1,4 +1,4 @@
-import 'package:bloccalulate/blocKalkulator.dart';
+import 'package:bloccalulate/bloc/blocKalkulator.dart';
 import 'package:flutter/material.dart';
 
 class KalkulatorPage extends StatefulWidget {
@@ -13,12 +13,21 @@ class _KalkulatorPageState extends State<KalkulatorPage> {
   final TextEditingController _controllerNumberB = TextEditingController();
 
   void calculate(Operation operation){
-    int numberA =  int.parse(_controllerNumberA.text.toString());
-    int numberB =  int.parse(_controllerNumberB.text.toString());
-    print("Data a: ${numberA.toString()}");
-    print("Data b: ${numberB.toString()}");
-    kalkulatorBloc.eventSink.add(KalkulatorEvent(operation, numberA, numberB));
-    //KalkulatorEvent(operation, numberA, numberB);
+    if (_controllerNumberA.text.isEmpty && _controllerNumberB.text.isEmpty){
+      kalkulatorBloc.add(KalkulatorEvent(operation, null, null));
+    } else if (_controllerNumberA.text.isEmpty){
+      int numberB =  int.parse(_controllerNumberB.text.toString());
+      kalkulatorBloc.add(KalkulatorEvent(operation, null, numberB));
+    } else if (_controllerNumberB.text.isEmpty){
+      int numberA =  int.parse(_controllerNumberA.text.toString());
+      kalkulatorBloc.add(KalkulatorEvent(operation, numberA, null));
+    }else {
+      int numberA = int.parse(_controllerNumberA.text.toString());
+      int numberB = int.parse(_controllerNumberB.text.toString());
+      print("Data a: ${numberA.toString()}");
+      print("Data b: ${numberB.toString()}");
+      kalkulatorBloc.add(KalkulatorEvent(operation, numberA, numberB));
+    }
   }
 
 
@@ -104,6 +113,9 @@ class _KalkulatorPageState extends State<KalkulatorPage> {
                               Text("Input B: ${_controllerNumberB.text}")
                             ],
                           );
+                        }else if (snapshot.data is KalkulatoorFailed) {
+                          final errors = snapshot.data as KalkulatoorFailed;
+                          return Text(errors.error);
                         }else {
                           return Container();
                         }

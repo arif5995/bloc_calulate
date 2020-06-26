@@ -80,6 +80,10 @@ class KalkulatorBloc {
     _eventController.stream.listen(_mapEventToState);
   }
 
+  void add(KalkulatorEvent event){
+    eventSink.add(event);
+  }
+
   void dispose(){
     _eventController.close();
     _stateController.close();
