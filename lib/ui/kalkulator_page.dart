@@ -31,6 +31,10 @@ class _KalkulatorPageState extends State<KalkulatorPage> {
     }
   }
 
+//  void calculater(Operation operation) {
+//    kalkulatorBloc.add(operation);
+//  }
+
   @override
   void dispose() {
     kalkulatorBloc.dispose();
@@ -42,28 +46,40 @@ class _KalkulatorPageState extends State<KalkulatorPage> {
       appBar: AppBar(
         title: Text('Flutter Kalkulator bloc'),
       ),
-      body: SafeArea(
-          child: Padding(
+      body: SingleChildScrollView(
+          child: Container(
+            height: MediaQuery.of(context).size.height,
             padding: EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                TextField(
-                  controller: _controllerNumberA,
-                  decoration: InputDecoration(
-                    labelText: 'Number A',
-                    errorText: _validate ? "Number A Kosoong" : null
+              StreamBuilder<KalkulatorState>(
+                stream: kalkulatorBloc.stateStream,
+                builder: (context, snapshot) {
+                  return TextField(
+                      controller: _controllerNumberA,
+                      decoration: InputDecoration(
+                      labelText: 'Number A',
+                      errorText: snapshot.error
                   ),
                   keyboardType: TextInputType.number,
-                ),
-                TextField(
-                  controller: _controllerNumberB,
-                  decoration: InputDecoration(
-                    labelText: 'Number B',
-                      errorText: _validate ? "Number B Kosoong" : null
-                  ),
-                  keyboardType: TextInputType.number,
-                ),
+                  );
+                }
+              ),
+              SizedBox(height: 20,),
+              StreamBuilder<KalkulatorState>(
+                stream: kalkulatorBloc.stateStream,
+                builder: (context, snapshot) {
+                  return TextField(
+                    controller: _controllerNumberB,
+                    decoration: InputDecoration(
+                        labelText: 'Number B',
+                        errorText: snapshot.error
+                    ),
+                    keyboardType: TextInputType.number,
+                  );
+                }
+              ),
                 Row(
                   children: <Widget>[
                     Expanded(
@@ -71,14 +87,16 @@ class _KalkulatorPageState extends State<KalkulatorPage> {
                           child: Text("+"),
                           onPressed: () {
                             calculate(Operation.tambah);
-                          }),
+                            //calculater(Operation.tambah);
+                          }
+                      ),
                     ),
                     SizedBox(width: 8.0),
                     Expanded(
                       child: RaisedButton(
                           child: Text("-"),
                           onPressed: () {
-                            calculate(Operation.kurang);
+                            //calculate(Operation.kurang);
                           }),
                     ),
                     SizedBox(width: 8.0),
@@ -86,7 +104,7 @@ class _KalkulatorPageState extends State<KalkulatorPage> {
                       child: RaisedButton(
                           child: Text(":"),
                           onPressed: () {
-                            calculate(Operation.bagi);
+                            //calculate(Operation.bagi);
                           }),
                     ),
                     SizedBox(width: 8.0),
@@ -94,7 +112,7 @@ class _KalkulatorPageState extends State<KalkulatorPage> {
                       child: RaisedButton(
                           child: Text("x"),
                           onPressed: () {
-                            calculate(Operation.kali);
+                           // calculate(Operation.kali);
                           }),
                     ),
                   ],
@@ -123,15 +141,6 @@ class _KalkulatorPageState extends State<KalkulatorPage> {
                         return Container();
                       }
                     },)
-//               StreamBuilder(
-//                   stream: kalkulatorBloc.stateStream,
-//                   builder: (context, snapshot ){
-//                     if(snapshot.hasData){
-//                       return Text("Hasil : ${snapshot.data.result}");
-//                     } else {
-//                       return Text("");
-//                     }
-//                   })
               ],
             ),
           )),
