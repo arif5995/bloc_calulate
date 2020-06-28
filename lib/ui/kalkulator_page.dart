@@ -22,6 +22,12 @@ class _KalkulatorPageState extends State<KalkulatorPage> {
       int numberA =  int.parse(_controllerNumberA.text.toString());
       kalkulatorBloc.add(KalkulatorEvent(operation, numberA, null));
     }else {
+      int numberB = int.parse(_controllerNumberB.text.toString());
+      kalkulatorBloc.add(KalkulatorEvent(operation, null, numberB));
+    } else if (_controllerNumberB.text.isEmpty){
+      int numberA = int.parse(_controllerNumberA.text.toString());
+      kalkulatorBloc.add(KalkulatorEvent(operation, numberA, null));
+    } else {
       int numberA = int.parse(_controllerNumberA.text.toString());
       int numberB = int.parse(_controllerNumberB.text.toString());
       print("Data a: ${numberA.toString()}");
@@ -30,6 +36,9 @@ class _KalkulatorPageState extends State<KalkulatorPage> {
     }
   }
 
+//  void calculater(Operation operation) {
+//    kalkulatorBloc.add(operation);
+//  }
 
   @override
   void dispose() {
@@ -42,27 +51,39 @@ class _KalkulatorPageState extends State<KalkulatorPage> {
       appBar: AppBar(
         title: Text('Flutter Kalkulator bloc'),
       ),
-      body: SafeArea(
-          child: Padding(
+      body: SingleChildScrollView(
+          child: Container(
+            height: MediaQuery.of(context).size.height,
             padding: EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                TextField(
-                  controller: _controllerNumberA,
-                  decoration: InputDecoration(
-                    labelText: 'Number A',
-                    errorText: _validate ? "Number A Kosoong" : null
-                  ),
-                  keyboardType: TextInputType.number,
+                StreamBuilder<KalkulatorState>(
+                    stream: kalkulatorBloc.stateStream,
+                    builder: (context, snapshot) {
+                      return TextField(
+                        controller: _controllerNumberA,
+                        decoration: InputDecoration(
+                            labelText: 'Number A',
+                            errorText: snapshot.error
+                        ),
+                        keyboardType: TextInputType.number,
+                      );
+                    }
                 ),
-                TextField(
-                  controller: _controllerNumberB,
-                  decoration: InputDecoration(
-                    labelText: 'Number B',
-                      errorText: _validate ? "Number B Kosoong" : null
-                  ),
-                  keyboardType: TextInputType.number,
+                SizedBox(height: 20,),
+                StreamBuilder<KalkulatorState>(
+                    stream: kalkulatorBloc.stateStream,
+                    builder: (context, snapshot) {
+                      return TextField(
+                        controller: _controllerNumberB,
+                        decoration: InputDecoration(
+                            labelText: 'Number B',
+                            errorText: snapshot.error
+                        ),
+                        keyboardType: TextInputType.number,
+                      );
+                    }
                 ),
                 Row(
                   children: <Widget>[
@@ -71,14 +92,16 @@ class _KalkulatorPageState extends State<KalkulatorPage> {
                           child: Text("+"),
                           onPressed: () {
                             calculate(Operation.tambah);
-                          }),
+                            //calculater(Operation.tambah);
+                          }
+                      ),
                     ),
                     SizedBox(width: 8.0),
                     Expanded(
                       child: RaisedButton(
                           child: Text("-"),
                           onPressed: () {
-                            calculate(Operation.kurang);
+                            //calculate(Operation.kurang);
                           }),
                     ),
                     SizedBox(width: 8.0),
@@ -86,7 +109,7 @@ class _KalkulatorPageState extends State<KalkulatorPage> {
                       child: RaisedButton(
                           child: Text(":"),
                           onPressed: () {
-                            calculate(Operation.bagi);
+                            //calculate(Operation.bagi);
                           }),
                     ),
                     SizedBox(width: 8.0),
@@ -94,7 +117,7 @@ class _KalkulatorPageState extends State<KalkulatorPage> {
                       child: RaisedButton(
                           child: Text("x"),
                           onPressed: () {
-                            calculate(Operation.kali);
+                            // calculate(Operation.kali);
                           }),
                     ),
                   ],
@@ -120,18 +143,29 @@ class _KalkulatorPageState extends State<KalkulatorPage> {
                           return Container();
                         }
                       }else {
+=======
+                  stream: kalkulatorBloc.stateStream,
+                  builder: (context, snapshot){
+                    if(snapshot.hasData){
+                      if (snapshot.data is KalkulatorSukses) {
+                        final data = snapshot.data as KalkulatorSukses;
+                        return Column(
+                          children: <Widget>[
+                            Text("Hasil : ${data.result}"),
+                            Text("Input A: ${_controllerNumberA.text}"),
+                            Text("Input B: ${_controllerNumberB.text}")
+                          ],
+                        );
+                      }else if(snapshot.data is KalkulatoorFailed) {
+                        final errors = snapshot.data as KalkulatoorFailed;
+                        return Text(errors.error);
+                      }else{
                         return Container();
                       }
-                    },)
-//               StreamBuilder(
-//                   stream: kalkulatorBloc.stateStream,
-//                   builder: (context, snapshot ){
-//                     if(snapshot.hasData){
-//                       return Text("Hasil : ${snapshot.data.result}");
-//                     } else {
-//                       return Text("");
-//                     }
-//                   })
+                    }else {
+                      return Container();
+                    }
+                  },)
               ],
             ),
           )),
