@@ -21,12 +21,6 @@ class _KalkulatorPageState extends State<KalkulatorPage> {
     } else if (_controllerNumberB.text.isEmpty){
       int numberA =  int.parse(_controllerNumberA.text.toString());
       kalkulatorBloc.add(KalkulatorEvent(operation, numberA, null));
-    }else {
-      int numberB = int.parse(_controllerNumberB.text.toString());
-      kalkulatorBloc.add(KalkulatorEvent(operation, null, numberB));
-    } else if (_controllerNumberB.text.isEmpty){
-      int numberA = int.parse(_controllerNumberA.text.toString());
-      kalkulatorBloc.add(KalkulatorEvent(operation, numberA, null));
     } else {
       int numberA = int.parse(_controllerNumberA.text.toString());
       int numberB = int.parse(_controllerNumberB.text.toString());
@@ -143,26 +137,6 @@ class _KalkulatorPageState extends State<KalkulatorPage> {
                           return Container();
                         }
                       }else {
-=======
-                  stream: kalkulatorBloc.stateStream,
-                  builder: (context, snapshot){
-                    if(snapshot.hasData){
-                      if (snapshot.data is KalkulatorSukses) {
-                        final data = snapshot.data as KalkulatorSukses;
-                        return Column(
-                          children: <Widget>[
-                            Text("Hasil : ${data.result}"),
-                            Text("Input A: ${_controllerNumberA.text}"),
-                            Text("Input B: ${_controllerNumberB.text}")
-                          ],
-                        );
-                      }else if(snapshot.data is KalkulatoorFailed) {
-                        final errors = snapshot.data as KalkulatoorFailed;
-                        return Text(errors.error);
-                      }else{
-                        return Container();
-                      }
-                    }else {
                       return Container();
                     }
                   },)
