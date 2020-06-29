@@ -10,6 +10,7 @@ class _KalkulatorPageState extends State<KalkulatorPage> {
   KalkulatorBloc kalkulatorBloc = KalkulatorBloc();
   bool _validate = false;
   bool _Rubah = false;
+  bool _tambah = true;
   final TextEditingController _controllerNumberA = TextEditingController();
   final TextEditingController _controllerNumberB = TextEditingController();
 
