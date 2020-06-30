@@ -1,4 +1,6 @@
 import 'package:bloccalulate/bloc/blocKalkulator.dart';
+import 'package:bloccalulate/ui/widget/buttonCircle.dart';
+import 'package:bloccalulate/ui/widget/outputText.dart';
 import 'package:flutter/material.dart';
 
 class KalkulatorPage extends StatefulWidget {
@@ -34,9 +36,6 @@ class _KalkulatorPageState extends State<KalkulatorPage> {
     }
   }
 
-//  void calculater(Operation operation) {
-//    kalkulatorBloc.add(operation);
-//  }
 
   @override
   void dispose() {
@@ -49,104 +48,107 @@ class _KalkulatorPageState extends State<KalkulatorPage> {
       appBar: AppBar(
         title: Text('Flutter Kalkulator bloc'),
       ),
-      body: SingleChildScrollView(
-          child: Container(
-            height: MediaQuery.of(context).size.height,
-            padding: EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            StreamBuilder<KalkulatorState>(
+                stream: kalkulatorBloc.stateStream,
+                builder: (context, snapshot) {
+                  return TextField(
+                    controller: _controllerNumberA,
+                    decoration: InputDecoration(
+                        labelText: 'Number A',
+                        errorText: snapshot.error
+                    ),
+                    keyboardType: TextInputType.number,
+                  );
+                }
+            ),
+            SizedBox(height: 20,),
+            StreamBuilder<KalkulatorState>(
+                stream: kalkulatorBloc.stateStream,
+                builder: (context, snapshot) {
+                  return TextField(
+                    controller: _controllerNumberB,
+                    decoration: InputDecoration(
+                        labelText: 'Number B',
+                        errorText: snapshot.error
+                    ),
+                    keyboardType: TextInputType.number,
+                  );
+                }
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                StreamBuilder<KalkulatorState>(
-                    stream: kalkulatorBloc.stateStream,
-                    builder: (context, snapshot) {
-                      return TextField(
-                        controller: _controllerNumberA,
-                        decoration: InputDecoration(
-                            labelText: 'Number A',
-                            errorText: snapshot.error
-                        ),
-                        keyboardType: TextInputType.number,
-                      );
-                    }
-                ),
-                SizedBox(height: 20,),
-                StreamBuilder<KalkulatorState>(
-                    stream: kalkulatorBloc.stateStream,
-                    builder: (context, snapshot) {
-                      return TextField(
-                        controller: _controllerNumberB,
-                        decoration: InputDecoration(
-                            labelText: 'Number B',
-                            errorText: snapshot.error
-                        ),
-                        keyboardType: TextInputType.number,
-                      );
-                    }
-                ),
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: RaisedButton(
-                          child: Text("+"),
-                          onPressed: () {
-                            calculate(Operation.tambah);
-                            //calculater(Operation.tambah);
-                          }
-                      ),
-                    ),
-                    SizedBox(width: 8.0),
-                    Expanded(
-                      child: RaisedButton(
-                          child: Text("-"),
-                          onPressed: () {
-                            //calculate(Operation.kurang);
-                          }),
-                    ),
-                    SizedBox(width: 8.0),
-                    Expanded(
-                      child: RaisedButton(
-                          child: Text(":"),
-                          onPressed: () {
-                            //calculate(Operation.bagi);
-                          }),
-                    ),
-                    SizedBox(width: 8.0),
-                    Expanded(
-                      child: RaisedButton(
-                          child: Text("x"),
-                          onPressed: () {
-                            // calculate(Operation.kali);
-                          }),
-                    ),
-                  ],
+                ButtonCircle(
+                  text: "+",
+                  action: (){
+                    calculate(Operation.tambah);
+                  },
                 ),
                 SizedBox(width: 8.0),
-                StreamBuilder<KalkulatorState>(
-                    stream: kalkulatorBloc.stateStream,
-                    builder: (context, snapshot){
-                      if(snapshot.hasData){
-                        if (snapshot.data is KalkulatorSukses) {
-                          final data = snapshot.data as KalkulatorSukses;
-                          return Column(
-                            children: <Widget>[
-                              Text("Hasil : ${data.result}"),
-                              Text("Input A: ${_controllerNumberA.text}"),
-                              Text("Input B: ${_controllerNumberB.text}")
-                            ],
-                          );
-                        }else if (snapshot.data is KalkulatoorFailed) {
-                          final errors = snapshot.data as KalkulatoorFailed;
-                          return Text(errors.error);
-                        }else {
-                          return Container();
-                        }
-                      }else {
-                      return Container();
-                    }
-                  },)
+                ButtonCircle(
+                  text: "-",
+                  action: (){
+                    calculate(Operation.tambah);
+                  },
+                ),
+                SizedBox(width: 8.0),
+                ButtonCircle(
+                  text: "x",
+                  action: (){
+                    calculate(Operation.tambah);
+                  },
+                ),
+                SizedBox(width: 8.0),
+                ButtonCircle(
+                  text: ":",
+                  action: (){
+                    calculate(Operation.tambah);
+                  },
+                ),
               ],
             ),
-          )),
+            StreamBuilder<KalkulatorState>(
+                stream: kalkulatorBloc.stateStream,
+                builder: (context, snapshot){
+                  if(snapshot.hasData){
+                    if (snapshot.data is KalkulatorSukses) {
+                      final data = snapshot.data as KalkulatorSukses;
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Text("Hasil", style: TextStyle(fontSize: 20),),
+                            OutputText(
+                              output: data.result.toString(),
+                            )
+                          ],
+                        ),
+                      );
+                    }else if (snapshot.data is KalkulatoorFailed) {
+                      final errors = snapshot.data as KalkulatoorFailed;
+                      return OutputText(
+                          output: errors.error.toString(),
+                      );
+                    }else {
+                      return Container();
+                    }
+                  }else {
+                  return Container();
+                }
+              },)
+          ],
+        ),
+      ),
     );
   }
 }
