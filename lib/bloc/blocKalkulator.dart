@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 
 import 'package:rxdart/rxdart.dart';
 
@@ -39,6 +40,7 @@ class KalkulatorBloc {
 
   void _mapEventToState(KalkulatorEvent kalkulatorEvent){
     int results = 0;
+    Double double;
     String inputA = "Input A Kosong";
     String inputB = "Input B Kosong";
     if (kalkulatorEvent.numberA == null){
@@ -55,8 +57,12 @@ class KalkulatorBloc {
           print("Inputan B : ${kalkulatorEvent.numberB}");
           break;
         case Operation.kurang:
-          results = kalkulatorEvent.numberA - kalkulatorEvent.numberB;
-          _stateSink.add(KalkulatorSukses(results));
+          if (kalkulatorEvent.numberA < kalkulatorEvent.numberB){
+            _stateSink.add(KalkulatoorFailed("Number A lebih kecil daripada Number B"));
+          } else {
+            results = kalkulatorEvent.numberA - kalkulatorEvent.numberB;
+            _stateSink.add(KalkulatorSukses(results));
+          }
           print(results);
           break;
         case Operation.kali:
@@ -67,7 +73,7 @@ class KalkulatorBloc {
         case Operation.bagi:
           results = kalkulatorEvent.numberA ~/ kalkulatorEvent.numberB;
           _stateSink.add(KalkulatorSukses(results));
-          print(results);
+          print(results.roundToDouble());
           break;
         default:
           print("Invalid choice");
